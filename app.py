@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
-from models import setup_db, Recipe, Item
+from models import setup_db, Recipe, Ingredient
 
 
 def create_app(test_config=None):
@@ -31,8 +31,12 @@ def create_app(test_config=None):
     def add_recipe():
         try:
             data = request.get_json()
-            Recipe(**data).insert()
-            return jsonify("OK")
+            recipe = Recipe(**data)
+            recipe.insert()
+            return jsonify({
+                'success': True,
+                'result': recipe.format()
+            })
         except TypeError:
             abort(400)
 
@@ -52,7 +56,7 @@ def create_app(test_config=None):
             abort(404)
         
         data = request.get_json()
-        fields = ['name', 'procedure', 'ingredients', 'time']
+        fields = ['name', 'procedure', 'time']
         has_valid_fields = any([field in data for field in fields])
         if not has_valid_fields:
             abort(400)
@@ -79,11 +83,68 @@ def create_app(test_config=None):
             'recipe_id': recipe_id
         })
 
-    @app.route('/items', methods=['GET'])
-    def list_items():
-        result = Item.query.all()
+    @app.route('/ingredients', methods=['GET'])
+    def list_ingredients():
+        result = [i.format() for i in Ingredient.query.all()]
         return jsonify({
             'result': result
+        })
+
+    
+    @app.route('/ingredients', methods=['POST'])
+    def create_ingredient():
+        try:
+            data = request.get_json()
+            ingredient = Ingredient(**data)
+            ingredient.insert()
+            return jsonify({
+                'success': True,
+                'result': ingredient.format()
+            })
+        except TypeError:
+            abort(400)
+    
+    @app.route('/ingredients/<int:item_id>', methods=['GET'])
+    def get_ingredient(item_id):
+        item = Ingredient.query.get(item_id)
+        if not item:
+            abort(404)
+        return jsonify({
+            "result": item.format()
+        })
+    
+    @app.route('/ingredients/<int:item_id>', methods=['PATCH'])
+    def update_ingredient(item_id):
+        item = Ingredient.query.get(item_id)
+        if not item:
+            abort(404)
+        
+        data = request.get_json()
+        fields = ['recipe_id', 'name', 'optional', 'measurement', 'measurement_unit']
+        has_valid_fields = any([field in data for field in fields])
+        if not has_valid_fields:
+            abort(400)
+        
+        for field in fields:
+            if field in data:
+                setattr(item, field, data[field])
+        
+        item.update()
+        return jsonify({
+            "success": True,
+            "result": item.format()
+        })
+    
+    @app.route('/ingredients/<int:item_id>', methods=['DELETE'])
+    def delete_ingredient(item_id):
+        item = Ingredient.query.get(item_id)
+        if not item:
+            abort(404)
+        
+        item.delete()
+        return jsonify({
+            'success': True,
+            'ingredient_id': item_id
         })
 
     # Error Handlers
