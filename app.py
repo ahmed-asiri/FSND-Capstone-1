@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 from models import setup_db, Recipe, Ingredient
+from auth import requires_auth, AuthError
 
 
 def create_app(test_config=None):
@@ -187,6 +188,13 @@ def create_app(test_config=None):
         'message': 'Server Error',
         'success': False
         }), 500
+
+    
+    @app.errorhandler(AuthError)
+    def handle_auth_error(ex):
+        response = jsonify(ex.error)
+        response.status_code = ex.status_code
+        return response
 
 
     return app
