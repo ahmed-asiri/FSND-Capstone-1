@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
-from models import setup_db, Recipe
+from models import setup_db, Recipe, Item
 
 
 def create_app(test_config=None):
@@ -36,6 +36,49 @@ def create_app(test_config=None):
         except TypeError:
             abort(400)
 
+    @app.route('/recipes/<int:recipe_id>', methods=['GET'])
+    def get_recipe(recipe_id):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            abort(404)
+        return jsonify({
+            "result": recipe.format()
+        })
+    
+    @app.route('/recipes/<int:recipe_id>', methods=['PATCH'])
+    def update_recipe(recipe_id):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            abort(404)
+        
+        data = request.get_json()
+        fields = ['name', 'procedure', 'ingredients', 'time']
+        has_valid_fields = any([field in data for field in fields])
+        if not has_valid_fields:
+            abort(400)
+        
+        for field in fields:
+            if field in data:
+                setattr(recipe, field, data[field])
+        
+        recipe.update()
+        return jsonify({
+            "success": True,
+            "result": recipe.format()
+        })
+
+    @app.route('/recipes/<int:recipe_id>', methods=['DELETE'])
+    def delete_recipe(recipe_id):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            abort(404)
+        
+        recipe.delete()
+        return jsonify({
+            'success': True,
+            'recipe_id': recipe_id
+        })
+
     @app.route('/items', methods=['GET'])
     def list_items():
         result = Item.query.all()
@@ -43,11 +86,7 @@ def create_app(test_config=None):
             'result': result
         })
 
-    @app.route('/items', methods=['POST'])
-    def add_item():
-        data = request.get_json()
-        Recipe(**data).insert()
-        return jsonify("OK")
+    # Error Handlers
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -82,7 +121,7 @@ def create_app(test_config=None):
     
     
     @app.errorhandler(500)
-    def unprocessable(error):
+    def server_error(error):
         return jsonify({
         'message': 'Server Error',
         'success': False
