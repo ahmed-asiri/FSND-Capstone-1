@@ -28,8 +28,6 @@ class Recipe(db.Model):
   # time to cook in minutes
   time = Column(Integer)
 
-  # TODO: additional fields: image etc.
-
   def insert(self):
     db.session.add(self)
     db.session.commit()
@@ -59,7 +57,7 @@ class Ingredient(db.Model):
   name = Column(String)
   optional = Column(Boolean, default=False)
   measurement = Column(Integer)
-  measurement_unit = Column(String)  # enum
+  measurement_unit = Column(String)
 
   def insert(self):
     db.session.add(self)

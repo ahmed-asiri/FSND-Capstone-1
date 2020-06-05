@@ -100,9 +100,144 @@ pytest test_rbac.py
 
 ## Endpoints
 
-Documentation of endpoints.
+### `GET /`
 
-<todo: insert endpoints documentation>
+The only public endpoint, for debugging.
+
+Returns: `"Healthy"`
+
+### `GET /recipes`
+
+- Returns the list of recipes.
+- Required headers:
+  - `Authorization` header with bearer token that has `read:recipes` permission.
+- Request arguments: None
+- Returns:
+  - `200 OK` response, body with a `result` key, value being the list of recipes.
+
+Examples response:
+```json
+{
+  "result": [
+    {
+      "id": 1,
+      "ingredients": [],
+      "name": "Pizza",
+      "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
+      "time": 30
+    }
+  ]
+}
+```
+
+### `GET /recipes/<recipe_id>`
+
+- Returns a single recipe.
+- Required headers:
+  - `Authorization` header with bearer token that has `read:recipes` permission.
+- Request path arguments: `recipe_id`
+- Returns:
+  - `200 OK` response, body with a `result` key, value being the recipe object.
+  - `404 Not Found` response when an unknown recipe ID was provided.
+
+Example response:
+```json
+{
+  "result": {
+    "id": 1,
+    "ingredients": [],
+    "name": "Pizza",
+    "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
+    "time": 30
+  }
+}
+```
+
+### `POST /recipes`
+
+- Adds a new recipe. Accepts a recipe object.
+- Required headers:
+  - `Authorization` header with bearer token that has `create:recipes` permission.
+- Request body:
+  - `name`: Recipe name string
+  - `procedure`: Recipe instruction string
+  - `ingredients`: List of `Ingredient` objects
+  - `time`: Time to cook minutes, integer
+- Returns:
+  - `200 OK` response when a new record was successfully created.
+    `400 Bad Request` response when any of the fields are missing.
+
+Example response:
+```json
+{
+    "success": true,
+    "result": {
+        "id": 1,
+        "ingredients": [],
+        "name": "Pizza",
+        "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
+        "time": 30
+    }
+}
+```
+
+### `PATCH /recipes/<recipe_id>`
+
+- Updates a recipe.
+- Required headers:
+  - `Authorization` header with bearer token that has `update:recipes` permission.
+- Request body (can be a subset of):
+  - `name`: Recipe name string
+  - `procedure`: Recipe instruction string
+  - `ingredients`: List of `Ingredient` objects
+  - `time`: Time to cook minutes, integer
+- Returns:
+  - `200 OK` response when a new record was successfully created.
+  - `400 Bad Request` response when provided fields are invalid.
+  - `404 Not Found` response when an unknown recipe ID was provided.
+
+Example response:
+```json
+{
+    "success": true,
+    "result": {
+        "id": 1,
+        "ingredients": [],
+        "name": "Pizza",
+        "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
+        "time": 30
+    }
+}
+```
+
+### `DELETE /recipes/<recipe_id>`
+
+- Deletes a recipe.
+- Required headers:
+  - `Authorization` header with bearer token that has `delete:recipes` permission.
+- Request path arguments: `recipe_id`
+- Returns:
+  - `200 OK` response when a new record was successfully created.
+  - `404 Not Found` response when an unknown recipe ID was provided.
+
+Example response:
+```json
+{
+    "success": true,
+    "recipe_id": 1
+}
+```
+
+### `GET /ingredients`
+
+### `POST /ingredients`
+
+### `GET /ingredients/<item_id>`
+
+### `PATCH /ingredients/<item_id>`
+
+### `DELETE /ingredients/<item_id>`
+
 
 ## Authentication and Permissions
 
