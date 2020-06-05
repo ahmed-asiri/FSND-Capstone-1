@@ -12,6 +12,7 @@ if os.environ.get("DISABLE_AUTH0"):
 READONLY_TOKEN = os.environ["READONLY_TOKEN"]
 ADMIN_TOKEN = os.environ["ADMIN_TOKEN"]
 
+
 @pytest.fixture
 def admin_headers():
     return {'Authorization': f'Bearer {ADMIN_TOKEN}'}

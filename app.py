@@ -38,7 +38,7 @@ def create_app(test_config=None):
             ingredients = None
             if 'ingredients' in data:
                 ingredients = data.pop('ingredients')
-            
+
             recipe = Recipe(**data)
             if ingredients:
                 for i in ingredients:
@@ -62,14 +62,14 @@ def create_app(test_config=None):
         return jsonify({
             "result": recipe.format()
         })
-    
+
     @app.route('/recipes/<int:recipe_id>', methods=['PATCH'])
     @requires_auth('update:recipes')
     def update_recipe(jwt, recipe_id):
         recipe = Recipe.query.get(recipe_id)
         if not recipe:
             abort(404)
-        
+
         data = request.get_json()
 
         # if the patch request contains ingredients,
@@ -85,7 +85,7 @@ def create_app(test_config=None):
         has_valid_fields = any([field in data for field in fields])
         if not has_valid_fields:
             abort(400)
-        
+
         for field in fields:
             if field in data:
                 setattr(recipe, field, data[field])
@@ -102,7 +102,7 @@ def create_app(test_config=None):
         recipe = Recipe.query.get(recipe_id)
         if not recipe:
             abort(404)
-        
+
         recipe.delete()
         return jsonify({
             'success': True,
@@ -117,7 +117,6 @@ def create_app(test_config=None):
             'result': result
         })
 
-    
     @app.route('/ingredients', methods=['POST'])
     @requires_auth('create:recipes')
     def create_ingredient(jwt):
@@ -131,7 +130,7 @@ def create_app(test_config=None):
             })
         except TypeError:
             abort(400)
-    
+
     @app.route('/ingredients/<int:item_id>', methods=['GET'])
     @requires_auth('read:recipes')
     def get_ingredient(jwt, item_id):
@@ -141,37 +140,38 @@ def create_app(test_config=None):
         return jsonify({
             "result": item.format()
         })
-    
+
     @app.route('/ingredients/<int:item_id>', methods=['PATCH'])
     @requires_auth('update:recipes')
     def update_ingredient(jwt, item_id):
         item = Ingredient.query.get(item_id)
         if not item:
             abort(404)
-        
+
         data = request.get_json()
-        fields = ['recipe_id', 'name', 'optional', 'measurement', 'measurement_unit']
+        fields = ['recipe_id', 'name', 'optional',
+                  'measurement', 'measurement_unit']
         has_valid_fields = any([field in data for field in fields])
         if not has_valid_fields:
             abort(400)
-        
+
         for field in fields:
             if field in data:
                 setattr(item, field, data[field])
-        
+
         item.update()
         return jsonify({
             "success": True,
             "result": item.format()
         })
-    
+
     @app.route('/ingredients/<int:item_id>', methods=['DELETE'])
     @requires_auth('delete:recipes')
     def delete_ingredient(jwt, item_id):
         item = Ingredient.query.get(item_id)
         if not item:
             abort(404)
-        
+
         item.delete()
         return jsonify({
             'success': True,
@@ -183,58 +183,53 @@ def create_app(test_config=None):
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
-        'message': 'Bad Request',
-        'success': False
+            'message': 'Bad Request',
+            'success': False
         }), 400
 
     @app.errorhandler(401)
     def unauthorized(error):
         return jsonify({
-        'message': 'Unauthorized',
-        'success': False
+            'message': 'Unauthorized',
+            'success': False
         }), 401
-
 
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
-        'message': 'Not Found',
-        'success': False
+            'message': 'Not Found',
+            'success': False
         }), 404
-  
 
     @app.errorhandler(405)
     def not_allowed(error):
         return jsonify({
-        'message': 'Method Not Allowed',
-        'success': False
+            'message': 'Method Not Allowed',
+            'success': False
         }), 405
 
-  
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
-        'message': 'Unprocessable Entity',
-        'success': False
+            'message': 'Unprocessable Entity',
+            'success': False
         }), 422
-    
-    
+
     @app.errorhandler(500)
     def server_error(error):
         return jsonify({
-        'message': 'Server Error',
-        'success': False
+            'message': 'Server Error',
+            'success': False
         }), 500
 
-    
     @app.errorhandler(AuthError)
     def handle_auth_error(ex):
         response = jsonify(ex.error)
         response.status_code = ex.status_code
         return response
 
-
     return app
+
 
 app = create_app()
 

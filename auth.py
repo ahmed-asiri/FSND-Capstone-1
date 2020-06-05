@@ -71,7 +71,8 @@ def check_permissions(permission, payload):
         permissions = payload.get("permissions")
         if not permissions or permission not in permissions:
             raise AuthError(
-                {"code": "permission_denied", "description": "Permission denied",}, 401,
+                {"code": "permission_denied",
+                    "description": "Permission denied", }, 401,
             )
 
 
@@ -83,7 +84,7 @@ def verify_decode_jwt(token):
     rsa_key = {}
     if "kid" not in unverified_header:
         raise AuthError(
-            {"code": "invalid_header", "description": "Authorization malformed.",}, 401,
+            {"code": "invalid_header", "description": "Authorization malformed.", }, 401,
         )
 
     for key in jwks["keys"]:
@@ -157,4 +158,3 @@ def requires_auth(permission=""):
         return wrapper
 
     return requires_auth_decorator
-    

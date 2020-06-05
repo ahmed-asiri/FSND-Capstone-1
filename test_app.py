@@ -1,6 +1,8 @@
 '''
 Tests for jwt flask app.
 '''
+from models import Recipe, Ingredient
+from app import create_app
 import os
 import json
 import tempfile
@@ -10,15 +12,13 @@ import pytest
 # RBAC tests are in test_rbac.py
 os.environ["DISABLE_AUTH0"] = "1"
 
-from app import create_app
-from models import Recipe, Ingredient
-
 
 @pytest.fixture
 def client():
     '''Provide a test client that uses a temporary SQLite database'''
     db_fd, db_temp_filepath = tempfile.mkstemp()
-    app = create_app({'DATABASE_URL': f'sqlite:///{db_temp_filepath}', 'TESTING': True})
+    app = create_app(
+        {'DATABASE_URL': f'sqlite:///{db_temp_filepath}', 'TESTING': True})
 
     with app.test_client() as client:
         yield client
@@ -36,17 +36,17 @@ def test_data(client):
         time=30)
     pasta_ingredients = [
         Ingredient(recipe_id=pasta.id,
-                    name='Pasta',
-                    measurement='2',
-                    measurement_unit='packs'),
+                   name='Pasta',
+                   measurement='2',
+                   measurement_unit='packs'),
         Ingredient(recipe_id=pasta.id,
-                    name='Tomato Paste',
-                    measurement='300',
-                    measurement_unit='grams'),
+                   name='Tomato Paste',
+                   measurement='300',
+                   measurement_unit='grams'),
         Ingredient(recipe_id=pasta.id,
-                    name='Onion',
-                    measurement='1',
-                    measurement_unit='pcs'),
+                   name='Onion',
+                   measurement='1',
+                   measurement_unit='pcs'),
     ]
     pasta.ingredients = pasta_ingredients
     pasta.insert()
@@ -74,6 +74,7 @@ def test_data(client):
     omelette.ingredients = omelette_ingredients
     omelette.insert()
 
+
 def test_health(client):
     '''Debug endpoint for sanity check'''
     response = client.get('/')
@@ -94,7 +95,8 @@ def test_get_recipe(client):
     assert response.status_code == 200
     recipe = response.json['result']
     assert recipe['name'] == 'Pasta'
-    assert [i['name'] for i in recipe['ingredients']] == ['Pasta', 'Tomato Paste', 'Onion']
+    assert [i['name'] for i in recipe['ingredients']] == [
+        'Pasta', 'Tomato Paste', 'Onion']
 
 
 def test_get_recipe_not_found(client):
@@ -112,7 +114,7 @@ def test_create_recipe(client):
     }
     response = client.post('/recipes', json=recipe)
     assert response.status_code == 200
-  
+
     pizzas = Recipe.query.filter(Recipe.name == 'Pizza').count()
     assert pizzas == 1
 
@@ -155,7 +157,8 @@ def test_create_recipe_with_ingredients(client):
 
     sandwich = response.json['result']
     assert sandwich['name'] == 'Egg Avocado Sandwich'
-    assert [i['name'] for i in sandwich['ingredients']] == [i['name'] for i in recipe['ingredients']]
+    assert [i['name'] for i in sandwich['ingredients']] == [i['name']
+                                                            for i in recipe['ingredients']]
 
 
 def test_create_recipe_bad_request(client):
@@ -294,7 +297,8 @@ def test_update_ingredient(client):
 
 def test_update_ingredient_bad_request(client):
     '''Updating an ingredient with unknown field fails with BadRequest response'''
-    response = client.patch('/ingredients/1', json={'random_field': 'random_value'})
+    response = client.patch(
+        '/ingredients/1', json={'random_field': 'random_value'})
     assert response.status_code == 400
 
 
