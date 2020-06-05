@@ -1,3 +1,4 @@
+import os
 import json
 from flask import request, _request_ctx_stack, abort
 from functools import wraps
@@ -145,14 +146,18 @@ def requires_auth(permission=""):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            try:
-                token = get_token_auth_header()
-                payload = verify_decode_jwt(token)
-                check_permissions(permission, payload)
-            except AuthError as auth_error:
-                abort(auth_error.status_code)
-            return f(payload, *args, **kwargs)
+            if os.environ.get('DISABLE_AUTH0'):
+                return f('payload', *args, **kwargs)
+            else:
+                try:
+                    token = get_token_auth_header()
+                    payload = verify_decode_jwt(token)
+                    check_permissions(permission, payload)
+                except AuthError as auth_error:
+                    abort(auth_error.status_code)
+                return f(payload, *args, **kwargs)
 
         return wrapper
 
     return requires_auth_decorator
+    
