@@ -12,7 +12,7 @@ For testing the live deployment, a Postman collection with access tokens is prov
 
 <todo: add the Postman collection with access tokens>
 
-For details on access permissions, please see the **Authentication and Permissions** section later in the document.
+For details, please see the **Authentication and Permissions** section later in the document.
 
 ## Development Setup
 
@@ -49,7 +49,7 @@ First, you need a free Heroku account and have the heroku client installed. Plea
 heroku create <app_name>
 ```
 
-When successful you should have a `heroku` remote with address:
+When successful you should have a `heroku` remote in your repo with address:
 
 ```
 https://git.heroku.com/<app_name>.git
@@ -102,9 +102,7 @@ pytest test_rbac.py
 
 ### `GET /`
 
-The only public endpoint, for debugging.
-
-Returns: `"Healthy"`
+The only public endpoint, for debugging. Returns: `"Healthy"`
 
 ### `GET /recipes`
 
@@ -113,18 +111,27 @@ Returns: `"Healthy"`
   - `Authorization` header with bearer token that has `read:recipes` permission.
 - Request arguments: None
 - Returns:
-  - `200 OK` response, body with a `result` key, value being the list of recipes.
+  - `200 OK` response, body with a `result` key, its value being the list of recipes.
 
-Examples response:
+Example response:
 ```json
 {
   "result": [
     {
       "id": 1,
-      "ingredients": [],
       "name": "Pizza",
       "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
-      "time": 30
+      "time": 30,
+      "ingredients": [
+        {
+            "id": 1,
+            "recipe_id": 1,
+            "name": "Flour",
+            "optional": false,
+            "measurement": 250,
+            "measurement_unit": "grams"
+        }
+      ],
     }
   ]
 }
@@ -145,17 +152,17 @@ Example response:
 {
   "result": {
     "id": 1,
-    "ingredients": [],
     "name": "Pizza",
     "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
-    "time": 30
+    "time": 30,
+    "ingredients": []
   }
 }
 ```
 
 ### `POST /recipes`
 
-- Adds a new recipe. Accepts a recipe object.
+- Adds a new recipe.
 - Required headers:
   - `Authorization` header with bearer token that has `create:recipes` permission.
 - Request body:
@@ -173,10 +180,10 @@ Example response:
     "success": true,
     "result": {
         "id": 1,
-        "ingredients": [],
         "name": "Pizza",
         "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
-        "time": 30
+        "time": 30,
+        "ingredients": []
     }
 }
 ```
@@ -186,6 +193,7 @@ Example response:
 - Updates a recipe.
 - Required headers:
   - `Authorization` header with bearer token that has `update:recipes` permission.
+- Request path argument: `recipe_id`
 - Request body (can be a subset of):
   - `name`: Recipe name string
   - `procedure`: Recipe instruction string
@@ -202,10 +210,10 @@ Example response:
     "success": true,
     "result": {
         "id": 1,
-        "ingredients": [],
         "name": "Pizza",
         "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
-        "time": 30
+        "time": 30,
+        "ingredients": []
     }
 }
 ```
@@ -215,7 +223,7 @@ Example response:
 - Deletes a recipe.
 - Required headers:
   - `Authorization` header with bearer token that has `delete:recipes` permission.
-- Request path arguments: `recipe_id`
+- Request path argument: `recipe_id`
 - Returns:
   - `200 OK` response when a new record was successfully created.
   - `404 Not Found` response when an unknown recipe ID was provided.
@@ -230,18 +238,134 @@ Example response:
 
 ### `GET /ingredients`
 
-### `POST /ingredients`
+- Returns the list of ingredients.
+- Required headers:
+  - `Authorization` header with bearer token that has `read:recipes` permission.
+- Request arguments: None
+- Returns:
+  - `200 OK` response, body with a `result` key, value being the list of ingredients.
+
+Example response:
+```json
+{
+  "result": [
+    {
+        "id": 1,
+        "recipe_id": 1,
+        "name": "Flour",
+        "optional": false,
+        "measurement": 250,
+        "measurement_unit": "grams"
+    }
+  ]
+}
+```
 
 ### `GET /ingredients/<item_id>`
 
+- Returns a single ingredient.
+- Required headers:
+  - `Authorization` header with bearer token that has `read:recipes` permission.
+- Request path arguments: `item_id`
+- Returns:
+  - `200 OK` response, body with a `result` key, value being the ingredient object.
+  - `404 Not Found` response when an unknown ingredient ID was provided.
+
+Example response:
+```json
+{
+    "result": {
+        "id": 1,
+        "recipe_id": 1,
+        "name": "Flour",
+        "optional": false,
+        "measurement": 250,
+        "measurement_unit": "grams"
+    }
+}
+```
+
+### `POST /ingredients`
+
+- Adds a new ingredient.
+- Required headers:
+  - `Authorization` header with bearer token that has `create:recipes` permission.
+- Request body:
+  - `recipe_id`: Related recipe ID
+  - `name`: Ingredient name
+  - `optional`: Whether the ingredient is optional, boolean
+  - `measurement`: Measurement value, integer
+  - `measurement_unit`: Measurement unit name
+- Returns:
+  - `200 OK` response when a new record was successfully created.
+    `400 Bad Request` response when provided fields were invalid.
+
+Example response:
+```json
+{
+    "success": true,
+    "result": {
+        "id": 1,
+        "ingredients": [],
+        "name": "Pizza",
+        "procedure": "Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.",
+        "time": 30
+    }
+}
+```
+
 ### `PATCH /ingredients/<item_id>`
+
+- Updates an ingredient.
+- Required headers:
+  - `Authorization` header with bearer token that has `update:recipes` permission.
+- Request body (can be a subset of):
+  - `recipe_id`: Related recipe ID
+  - `name`: Ingredient name
+  - `optional`: Whether the ingredient is optional, boolean
+  - `measurement`: Measurement value, integer
+  - `measurement_unit`: Measurement unit name
+- Returns:
+  - `200 OK` response when the record was successfully updated.
+  - `400 Bad Request` response when provided fields were invalid.
+  - `404 Not Found` response when an unknown ingredient ID was provided.
+
+Example response:
+```json
+{
+    "success": true,
+    "result": {
+        "id": 1,
+        "recipe_id": 1,
+        "name": "Flour",
+        "optional": false,
+        "measurement": 250,
+        "measurement_unit": "grams"
+    }
+}
+```
 
 ### `DELETE /ingredients/<item_id>`
 
+- Deletes an ingredient.
+- Required headers:
+  - `Authorization` header with bearer token that has `delete:recipes` permission.
+- Request path arguments: `item_id`
+- Returns:
+  - `200 OK` response when a new record was successfully created.
+  - `404 Not Found` response when an unknown recipe ID was provided.
+
+Example response:
+```json
+{
+    "success": true,
+    "ingredient_id": 1
+}
+```
 
 ## Authentication and Permissions
 
-Authentication is handled via Auth0.
+Authentication is handled via [Auth0](https://auth0.com).
 
 All except one endpoints require authentication, and proper permission. The root is a public endpoint left there for debugging.
 
