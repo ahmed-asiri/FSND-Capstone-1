@@ -222,7 +222,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Shepherd's Pie\",\n\t\"procedure\": \"Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.\",\n\t\"time\": 25\n}",
+							"raw": "{\n\t\"name\": \"Sandwich\",\n\t\"procedure\": \"Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.\",\n\t\"time\": 15,\n\t\"ingredients\": [\n\t\t{\n\t\t\t\"name\": \"Bread\",\n\t\t\t\"measurement\": 2,\n\t\t\t\"measurement_unit\": \"pcs\"\n\t\t},\n\t\t{\n\t\t\t\"name\": \"Ham\",\n\t\t\t\"measurement\": 2,\n\t\t\t\"measurement_unit\": \"slices\"\n\t\t},\n\t\t{\n\t\t\t\"name\": \"Tomato\",\n\t\t\t\"measurement\": 1,\n\t\t\t\"measurement_unit\": \"slices\"\n\t\t},\n\t\t{\n\t\t\t\"name\": \"Green leaves\",\n\t\t\t\"measurement\": 1,\n\t\t\t\"measurement_unit\": \"pcs\"\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -287,6 +287,48 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "delete recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "80161894-e384-4a4a-af61-a364b87507a4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes/5",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes",
+								"5"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
@@ -300,6 +342,74 @@
 				]
 			},
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "guest access is denied",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ec6d28e5-6686-4961-8ad2-afb0ceb14ff5",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fsnd-recipehub.herokuapp.com/recipes",
+					"protocol": "https",
+					"host": [
+						"fsnd-recipehub",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"recipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ab40317-acd0-4586-8241-0bf0920b5284",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fsnd-recipehub.herokuapp.com/",
+					"protocol": "https",
+					"host": [
+						"fsnd-recipehub",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
