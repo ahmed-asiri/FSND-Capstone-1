@@ -6,9 +6,9 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = "recipehub.auth0.com"
-ALGORITHMS = ["RS256"]
-API_AUDIENCE = "recipehub-api"
+AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
+ALGORITHMS = [a.strip() for a in os.environ["ALGORITHMS"].split(",")]
+API_AUDIENCE = os.environ["API_AUDIENCE"]
 
 # AuthError Exception
 """
