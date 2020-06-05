@@ -1,0 +1,306 @@
+{
+	"info": {
+		"_postman_id": "1b99902a-739a-4807-88d3-7bee284bf927",
+		"name": "fsnd-recipehub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "readonly access",
+			"item": [
+				{
+					"name": "get recipes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fa2a87d3-2641-4818-a2ac-0c47bb5a79bc",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "31139074-94f7-4a0b-a625-dd236edf57e7",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Pizza\",\n\t\"procedure\": \"Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.\",\n\t\"time\": 30\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "31139074-94f7-4a0b-a625-dd236edf57e7",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Pizza\",\n\t\"procedure\": \"Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.\",\n\t\"time\": 30\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes/1",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkZCVDhoeGtpaE04TFlRRlN5QllmTCJ9.eyJpc3MiOiJodHRwczovL3JlY2lwZWh1Yi5hdXRoMC5jb20vIiwic3ViIjoibTVWSjBoU2EwVzdVbU03aEJ3dGFNTE91SFNyaFJjeFdAY2xpZW50cyIsImF1ZCI6InJlY2lwZWh1Yi1hcGkiLCJpYXQiOjE1OTEzODE5MzEsImV4cCI6MTU5MTU1NDczMSwiYXpwIjoibTVWSjBoU2EwVzdVbU03aEJ3dGFNTE91SFNyaFJjeFciLCJzY29wZSI6InJlYWQ6cmVjaXBlcyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbInJlYWQ6cmVjaXBlcyJdfQ.QMZMPBT1vy3bZfJ_5Rg1dzAbo_GHO9z9G3sEjCajqLPEi7zzgSJzlZptDf2emyzkAtGlFUL1knuy8Ap5z5W3XZiDQj7oSbrQNhBI6hjtzrK5DfNXprSYSHp1sPfS9EFSKnGsJpMQONuX3H4Dx067lhPtrQzHYj36VR9GB621PV-ajJonGSIfvqoxhqTJ1Ts2UwsylRLyX30tEM4d7ufYSvDZyEW0dg12_v3ecaF4JN8LkNx-y7pB77rzf6J6m2vB3XeoBcdojILLvOVOZGfjmot9ScGAXLVdJoQRaGLFP7PABDxwm0KkWvy_RcseeT6WP7T6tKidLAgKEILVpxTkeQ",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "05e75fd7-6e1c-422b-9460-7edc11695acc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ed56bded-779b-4165-b982-dd119cc337af",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "admin access",
+			"item": [
+				{
+					"name": "get recipes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "77b8f917-2400-41f7-ba17-72de38a6e6ff",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2c36eada-c54c-4fa7-824a-4a566103ac41",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Shepherd's Pie\",\n\t\"procedure\": \"Est qui alias molestias facilis et et eum. Ducimus est corrupti et qui. Et quidem nostrum qui ipsum perspiciatis et enim. Odio impedit et unde voluptatem.\",\n\t\"time\": 25\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dbaa5f5b-817e-47c5-a2dd-25f25059c642",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Margarita Pizza\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://fsnd-recipehub.herokuapp.com/recipes/1",
+							"protocol": "https",
+							"host": [
+								"fsnd-recipehub",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"recipes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkZCVDhoeGtpaE04TFlRRlN5QllmTCJ9.eyJpc3MiOiJodHRwczovL3JlY2lwZWh1Yi5hdXRoMC5jb20vIiwic3ViIjoiV0RkSzdzVXRkUHNISk93NjR2THhsSzBPajdySllVMExAY2xpZW50cyIsImF1ZCI6InJlY2lwZWh1Yi1hcGkiLCJpYXQiOjE1OTEzODE3NDQsImV4cCI6MTU5MTU1NDU0NCwiYXpwIjoiV0RkSzdzVXRkUHNISk93NjR2THhsSzBPajdySllVMEwiLCJzY29wZSI6InJlYWQ6cmVjaXBlcyBjcmVhdGU6cmVjaXBlcyB1cGRhdGU6cmVjaXBlcyBkZWxldGU6cmVjaXBlcyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbInJlYWQ6cmVjaXBlcyIsImNyZWF0ZTpyZWNpcGVzIiwidXBkYXRlOnJlY2lwZXMiLCJkZWxldGU6cmVjaXBlcyJdfQ.xwClpNCQ1gZQ79Rdj1iA8aAb2jsaZj1p974aFsT4Qp5PpcMrOxWLKecvng6i0urEESItQBk8Qfme_zTYwBdd-4CCQt8PKnDmV72pHMWAwc5zQyWJvrwipAsViP11HScv9aB1YJJ-M2jRt8cARZ-JvKyE7A84RqV8fnM4XsIMGjsseVm9SVAZ7Vim-yrtWm5d9KSrZv4G_qS3Gn-UFmHAx_r9UDjvMhuOsU46IlbLRcP4GmSv1er5ue0MUuUcDZ0x5Yy6TRV-FNg4HkMRawnCGMfT8hGnI7wkDX5eOMusHiGOo3prLzw0DGGa27g7wx_ekJ-_XhInWhcRYeBFMYykjA",
+						"type": "string"
+					}
+				]
+			},
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

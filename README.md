@@ -8,11 +8,11 @@ Live Heroku deployment: https://fsnd-recipehub.herokuapp.com/recipes
 
 The Heroku deployment requires authentication to start using. There are two access levels: ReadOnly and Admin.
 
-For testing the live deployment, a Postman collection with access tokens is provided for convenience. Please see the **Testing** section about automated testing.
+For testing the live deployment, a Postman collection with access tokens is provided for convenience (`fsnd-recipehub.postman_collection.json`).
 
-<todo: add the Postman collection with access tokens>
+For automated tests, please see the **Testing** section.
 
-For details, please see the **Authentication and Permissions** section later in the document.
+For authentication details, please see the **Authentication and Permissions** section later in the document.
 
 ## Development Setup
 
