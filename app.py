@@ -168,6 +168,13 @@ def create_app(test_config=None):
         'success': False
         }), 400
 
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return jsonify({
+        'message': 'Unauthorized',
+        'success': False
+        }), 401
+
 
     @app.errorhandler(404)
     def not_found(error):

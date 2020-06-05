@@ -149,12 +149,9 @@ def requires_auth(permission=""):
             if os.environ.get('DISABLE_AUTH0'):
                 return f('payload', *args, **kwargs)
             else:
-                try:
-                    token = get_token_auth_header()
-                    payload = verify_decode_jwt(token)
-                    check_permissions(permission, payload)
-                except AuthError as auth_error:
-                    abort(auth_error.status_code)
+                token = get_token_auth_header()
+                payload = verify_decode_jwt(token)
+                check_permissions(permission, payload)
                 return f(payload, *args, **kwargs)
 
         return wrapper
