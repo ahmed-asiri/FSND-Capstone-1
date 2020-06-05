@@ -6,6 +6,10 @@ import json
 import tempfile
 import pytest
 
+# We'll disable Auth0 calls when testing the core functionality to avoid spamming Auth0
+# RBAC tests are in test_rbac.py
+os.environ["DISABLE_AUTH0"] = "1"
+
 from app import create_app
 from models import Recipe, Ingredient
 
@@ -20,6 +24,7 @@ def client():
 
     os.close(db_fd)
     os.unlink(db_temp_filepath)
+
 
 @pytest.fixture(autouse=True)
 def test_data(client):
@@ -236,15 +241,3 @@ def test_delete_ingredient(client):
 def test_delete_ingredient_404(client):
     response = client.delete('/ingredients/1000')
     assert response.status_code == 404
-
-
-# def test_auth(client):
-#     body = {'email': EMAIL,
-#             'password': PASSWORD}
-#     response = client.post('/auth', 
-#                            data=json.dumps(body),
-#                            content_type='application/json')
-
-#     assert response.status_code == 200
-#     token = response.json['token']
-#     assert token is not None
