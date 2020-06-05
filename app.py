@@ -19,17 +19,20 @@ def create_app(test_config=None):
 
     @app.route('/', methods=['POST', 'GET'])
     def health():
+        """The only publically available endpoint, for debugging purposes"""
         return jsonify("Healthy")
 
     @app.route('/recipes', methods=['GET'])
-    def list_recipes():
+    @requires_auth('read:recipes')
+    def list_recipes(jwt):
         result = [r.format() for r in Recipe.query.all()]
         return jsonify({
             'result': result
         })
 
     @app.route('/recipes', methods=['POST'])
-    def add_recipe():
+    @requires_auth('create:recipes')
+    def add_recipe(jwt):
         try:
             data = request.get_json()
             recipe = Recipe(**data)
@@ -42,7 +45,8 @@ def create_app(test_config=None):
             abort(400)
 
     @app.route('/recipes/<int:recipe_id>', methods=['GET'])
-    def get_recipe(recipe_id):
+    @requires_auth('read:recipes')
+    def get_recipe(jwt, recipe_id):
         recipe = Recipe.query.get(recipe_id)
         if not recipe:
             abort(404)
@@ -51,7 +55,8 @@ def create_app(test_config=None):
         })
     
     @app.route('/recipes/<int:recipe_id>', methods=['PATCH'])
-    def update_recipe(recipe_id):
+    @requires_auth('update:recipes')
+    def update_recipe(jwt, recipe_id):
         recipe = Recipe.query.get(recipe_id)
         if not recipe:
             abort(404)
@@ -73,7 +78,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/recipes/<int:recipe_id>', methods=['DELETE'])
-    def delete_recipe(recipe_id):
+    @requires_auth('delete:recipes')
+    def delete_recipe(jwt, recipe_id):
         recipe = Recipe.query.get(recipe_id)
         if not recipe:
             abort(404)
@@ -85,7 +91,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/ingredients', methods=['GET'])
-    def list_ingredients():
+    @requires_auth('read:recipes')
+    def list_ingredients(jwt):
         result = [i.format() for i in Ingredient.query.all()]
         return jsonify({
             'result': result
@@ -93,7 +100,8 @@ def create_app(test_config=None):
 
     
     @app.route('/ingredients', methods=['POST'])
-    def create_ingredient():
+    @requires_auth('create:recipes')
+    def create_ingredient(jwt):
         try:
             data = request.get_json()
             ingredient = Ingredient(**data)
@@ -106,7 +114,8 @@ def create_app(test_config=None):
             abort(400)
     
     @app.route('/ingredients/<int:item_id>', methods=['GET'])
-    def get_ingredient(item_id):
+    @requires_auth('read:recipes')
+    def get_ingredient(jwt, item_id):
         item = Ingredient.query.get(item_id)
         if not item:
             abort(404)
@@ -115,7 +124,8 @@ def create_app(test_config=None):
         })
     
     @app.route('/ingredients/<int:item_id>', methods=['PATCH'])
-    def update_ingredient(item_id):
+    @requires_auth('update:recipes')
+    def update_ingredient(jwt, item_id):
         item = Ingredient.query.get(item_id)
         if not item:
             abort(404)
@@ -137,7 +147,8 @@ def create_app(test_config=None):
         })
     
     @app.route('/ingredients/<int:item_id>', methods=['DELETE'])
-    def delete_ingredient(item_id):
+    @requires_auth('delete:recipes')
+    def delete_ingredient(jwt, item_id):
         item = Ingredient.query.get(item_id)
         if not item:
             abort(404)
