@@ -24,6 +24,7 @@ def readonly_headers():
 
 # Unauthenticated user test
 def test_guest_access(client):
+    '''Request without access tokens is denied'''
     response = client.get('/recipes')
     assert response.status_code == 401
 
@@ -31,12 +32,14 @@ def test_guest_access(client):
 # Read-Only role tests
 
 def test_readonly_list_recipes(client, readonly_headers):
+    '''Can read recipes with the read only token'''
     response = client.get('/recipes', headers=readonly_headers)
     assert response.status_code == 200
     assert len(response.json['result']) == 2
 
 
 def test_readonly_create_recipe(client, readonly_headers):
+    '''Creating a recipe with read only token is denied'''
     recipe = {
         'name': 'Pizza',
         'procedure': 'Pizza making procedure',
@@ -49,12 +52,14 @@ def test_readonly_create_recipe(client, readonly_headers):
 # Admin role tests
 
 def test_admin_list_recipes(client, admin_headers):
+    '''Reading recipes with admin token'''
     response = client.get('/recipes', headers=admin_headers)
     assert response.status_code == 200
     assert len(response.json['result']) == 2
 
 
 def test_admin_create_recipe(client, admin_headers):
+    '''Creating recipe with admin token'''
     recipe = {
         'name': 'Pizza',
         'procedure': 'Pizza making procedure',
@@ -65,5 +70,6 @@ def test_admin_create_recipe(client, admin_headers):
 
 
 def test_admin_delete_recipe(client, admin_headers):
+    '''Deleting recipe with admin token'''
     response = client.delete('/recipes/1', headers=admin_headers)
     assert response.status_code == 200

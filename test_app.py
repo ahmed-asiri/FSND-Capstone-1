@@ -16,6 +16,7 @@ from models import Recipe, Ingredient
 
 @pytest.fixture
 def client():
+    '''Provide a test client that uses a temporary SQLite database'''
     db_fd, db_temp_filepath = tempfile.mkstemp()
     app = create_app({'DATABASE_URL': f'sqlite:///{db_temp_filepath}', 'TESTING': True})
 
@@ -28,6 +29,7 @@ def client():
 
 @pytest.fixture(autouse=True)
 def test_data(client):
+    '''Test dataset with two recipes, used in all tests'''
     pasta = Recipe(
         name='Pasta',
         procedure='Start by...',
@@ -73,18 +75,21 @@ def test_data(client):
     omelette.insert()
 
 def test_health(client):
+    '''Debug endpoint for sanity check'''
     response = client.get('/')
     assert response.status_code == 200
     assert response.json == 'Healthy'
 
 
 def test_list_recipes(client):
+    '''List available recipes'''
     response = client.get('/recipes')
     assert response.status_code == 200
     assert len(response.json['result']) == 2
 
 
 def test_get_recipe(client):
+    '''Getting one recipe'''
     response = client.get('/recipes/1')
     assert response.status_code == 200
     recipe = response.json['result']
@@ -93,11 +98,13 @@ def test_get_recipe(client):
 
 
 def test_get_recipe_not_found(client):
+    '''Returns NotFound when trying to retrieve a nonexistent recipe'''
     response = client.get('/recipes/1000')
     assert response.status_code == 404
 
 
 def test_create_recipe(client):
+    '''Creates a recipe, and check that it exists in the database'''
     recipe = {
         'name': 'Pizza',
         'procedure': 'Pizza making procedure',
@@ -111,12 +118,13 @@ def test_create_recipe(client):
 
 
 def test_create_recipe_bad_request(client):
-    '''test create recipe with missing parameters'''
+    '''Create a recipe with missing parameters returns BadRequest response'''
     response = client.post('/recipes', json=None)
     assert response.status_code == 400
 
 
 def test_update_recipe(client):
+    '''Updating a recipe value is persisted on later retrieval'''
     response = client.patch('/recipes/1', json={'name': 'Burrito'})
     assert response.status_code == 200
     assert response.json['success'] == True
@@ -128,16 +136,19 @@ def test_update_recipe(client):
 
 
 def test_update_recipe_not_found(client):
+    '''Updating nonexisting recipe fails'''
     response = client.patch('/recipes/1000', json={'name': 'Burrito'})
     assert response.status_code == 404
 
 
 def test_update_recipe_no_data(client):
+    '''Updating a recipe without values fails'''
     response = client.patch('/recipes/1', json={})
     assert response.status_code == 400
 
 
 def test_delete_recipe(client):
+    '''Deleting a recipe is persisted'''
     response = client.delete('/recipes/1')
     assert response.status_code == 200
 
@@ -146,11 +157,13 @@ def test_delete_recipe(client):
 
 
 def test_delete_recipe_404(client):
+    '''Deleting a nonexistent recipe fails with NotFound'''
     response = client.delete('/recipes/1000')
     assert response.status_code == 404
 
 
 def test_get_ingredients(client):
+    '''Listing ingredients separate from the recipe'''
     response = client.get('/ingredients')
     assert response.status_code == 200
 
@@ -160,6 +173,7 @@ def test_get_ingredients(client):
 
 
 def test_create_ingredient(client):
+    '''Adding ingredient related to a recipe is persisted on the recipe'''
     response = client.get('/recipes/1')
     recipe = response.json['result']
     recipe_ingredient_ids = [i['id'] for i in recipe['ingredients']]
@@ -187,22 +201,26 @@ def test_create_ingredient(client):
 
 
 def test_create_ingredient_bad_request(client):
+    '''Adding ingredient with no input fails'''
     response = client.post('/ingredients', json=None)
     assert response.status_code == 400
 
 
 def test_get_ingredient(client):
+    '''Getting an ingredient record'''
     response = client.get('/ingredients/1')
     assert response.status_code == 200
     assert response.json['result']['name'] == 'Pasta'
 
 
 def test_get_ingredient_404(client):
+    '''Getting a nonexistent ingredient fails with NotFound'''
     response = client.get('/ingredients/1000')
     assert response.status_code == 404
 
 
 def test_update_ingredient(client):
+    '''Updating an ingredient is persisted'''
     response = client.get('/ingredients/1')
     old_data = response.json
     new_data = {
@@ -221,16 +239,19 @@ def test_update_ingredient(client):
 
 
 def test_update_ingredient_bad_request(client):
+    '''Updating an ingredient with unknown field fails with BadRequest response'''
     response = client.patch('/ingredients/1', json={'random_field': 'random_value'})
     assert response.status_code == 400
 
 
 def test_update_ingredient_404(client):
+    '''Updating a nonexistent ingredient fails with NotFound'''
     response = client.patch('/ingredients/1000', json={'name': 'test'})
     assert response.status_code == 404
 
 
 def test_delete_ingredient(client):
+    '''Deleting an ingredient is persisted'''
     response = client.delete('/ingredients/1')
     assert response.status_code == 200
 
@@ -239,5 +260,6 @@ def test_delete_ingredient(client):
 
 
 def test_delete_ingredient_404(client):
+    '''Deleting a nonexistent ingredient fails with NotFound'''
     response = client.delete('/ingredients/1000')
     assert response.status_code == 404
