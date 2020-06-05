@@ -39,9 +39,45 @@ git push heroku master
 
 To deploy the app to Heroku from scratch, keep reading.
 
-First, you need a Heroku account and install the heroku client. Please see [the official docs](https://devcenter.heroku.com/) on how to do these.
+### New Heroku deployment
 
-<todo: insert instructions on how to setup app anew>
+First, you need a free Heroku account and have the heroku client installed. Please see [the official docs](https://devcenter.heroku.com/) on how to do these.
+
+#### Create a Heroku app
+
+```
+heroku create <app_name>
+```
+
+When successful you should have a `heroku` remote with address:
+
+```
+https://git.heroku.com/<app_name>.git
+```
+
+#### Add Postgres addon
+
+```
+heroku addons:create heroku-postgresql:hobby-dev --app <app_name>
+```
+
+This will setup a database and make its connection string available as `DATABASE_URL` environment variable.
+
+#### Set configuration variables
+
+You can set your app's config variables from the web dashboard's app settings. 
+
+You can also do it from the command line. For example:
+
+```
+heroku config:set AUTH0_DOMAIN="mydomain.auth0.com"
+```
+
+Check your app's current config with:
+
+```
+heroku config
+```
 
 ## Testing
 
@@ -51,12 +87,14 @@ The main reasons to disable authentication are to avoid spamming Auth0 with our 
 The app functionality tests are in `test_app.py`. This test module uses `DISABLE_AUTH0=1` setting.
 
 ```
+source setup.sh
 pytest test_app.py
 ```
 
 The access control tests make requests to Auth0, and should be run every so often. This test module unsets `DISABLE_AUTH0` variable.
 
 ```
+source setup.sh
 pytest test_rbac.py
 ```
 
@@ -80,3 +118,16 @@ API endpoints use these permissions:
 * 'read:recipe' (can read recipes and ingredients)
 * 'update:recipe' (can update recipes and ingredients)
 * 'delete:recipe' (can delete recipes and ingredients)
+
+### How to renew access tokens used in tests
+
+Replace `client_id` and `client_secret` values.
+
+```
+curl --request POST \
+  --url https://recipehub.auth0.com/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{"client_id":"your_client_id","client_secret":"your_client_secret","audience":"recipehub-api","grant_type":"client_credentials"}' | jq .access_token
+```
+
+For reference, see the Test tab of your Auth0 API.
