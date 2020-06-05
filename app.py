@@ -35,7 +35,16 @@ def create_app(test_config=None):
     def add_recipe(jwt):
         try:
             data = request.get_json()
+            ingredients = None
+            if 'ingredients' in data:
+                ingredients = data.pop('ingredients')
+            
             recipe = Recipe(**data)
+            if ingredients:
+                for i in ingredients:
+                    ingredient = Ingredient(**i, recipe_id=recipe.id)
+                    recipe.ingredients.append(ingredient)
+
             recipe.insert()
             return jsonify({
                 'success': True,
@@ -62,6 +71,16 @@ def create_app(test_config=None):
             abort(404)
         
         data = request.get_json()
+
+        # if the patch request contains ingredients,
+        # we'll just reset the recipe's ingredients to them
+        if 'ingredients' in data:
+            ingredients = data.pop('ingredients')
+            recipe.ingredients = []
+            for i in ingredients:
+                ingredient = Ingredient(**i, recipe_id=recipe.id)
+                recipe.ingredients.append(ingredient)
+
         fields = ['name', 'procedure', 'time']
         has_valid_fields = any([field in data for field in fields])
         if not has_valid_fields:
@@ -70,7 +89,7 @@ def create_app(test_config=None):
         for field in fields:
             if field in data:
                 setattr(recipe, field, data[field])
-        
+
         recipe.update()
         return jsonify({
             "success": True,

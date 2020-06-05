@@ -104,7 +104,7 @@ def test_get_recipe_not_found(client):
 
 
 def test_create_recipe(client):
-    '''Creates a recipe, and check that it exists in the database'''
+    '''Creates a recipe stub, and check that it exists in the database'''
     recipe = {
         'name': 'Pizza',
         'procedure': 'Pizza making procedure',
@@ -117,6 +117,47 @@ def test_create_recipe(client):
     assert pizzas == 1
 
 
+def test_create_recipe_with_ingredients(client):
+    '''Creates a recipe with its ingredients, and check that it's persisted'''
+    recipe = {
+        'name': 'Egg Avocado Sandwich',
+        'procedure': 'Doloribus eos ut voluptates quae. Quae soluta non quisquam...',
+        'time': 15,
+        'ingredients': [
+            {
+                'name': 'Toasted bread',
+                'measurement': 2,
+                'measurement_unit': 'pcs'
+            },
+            {
+                'name': 'Boiled egg',
+                'measurement': 2,
+                'measurement_unit': 'pcs'
+            },
+            {
+                'name': 'Avocado',
+                'measurement': 1,
+                'measurement_unit': 'pcs'
+            },
+            {
+                'name': 'Lime juice',
+                'measurement': 1,
+                'measurement_unit': 'tea spoon'
+            },
+        ]
+    }
+    response = client.post('/recipes', json=recipe)
+    assert response.status_code == 200
+    recipe_id = response.json['result']['id']
+
+    response = client.get(f'/recipes/{recipe_id}')
+    assert response.status_code == 200
+
+    sandwich = response.json['result']
+    assert sandwich['name'] == 'Egg Avocado Sandwich'
+    assert [i['name'] for i in sandwich['ingredients']] == [i['name'] for i in recipe['ingredients']]
+
+
 def test_create_recipe_bad_request(client):
     '''Create a recipe with missing parameters returns BadRequest response'''
     response = client.post('/recipes', json=None)
@@ -125,7 +166,17 @@ def test_create_recipe_bad_request(client):
 
 def test_update_recipe(client):
     '''Updating a recipe value is persisted on later retrieval'''
-    response = client.patch('/recipes/1', json={'name': 'Burrito'})
+    new_data = {
+        'name': 'Burrito',
+        'ingredients': [
+            {
+                'name': 'Avocado',
+                'measurement': 1,
+                'measurement_unit': 'pcs'
+            }
+        ]
+    }
+    response = client.patch('/recipes/1', json=new_data)
     assert response.status_code == 200
     assert response.json['success'] == True
     assert response.json['result']['name'] == 'Burrito'
@@ -133,6 +184,9 @@ def test_update_recipe(client):
     response = client.get('/recipes/1')
     assert response.status_code == 200
     assert response.json['result']['name'] == 'Burrito'
+    ingredients = response.json['result']['ingredients']
+    assert len(ingredients) == 1
+    assert ingredients[0]['name'] == 'Avocado'
 
 
 def test_update_recipe_not_found(client):
