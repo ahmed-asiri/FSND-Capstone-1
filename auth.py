@@ -23,12 +23,6 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-INVALID_CLAIMS_AUTH_ERROR = AuthError({
-    "code": "invalid_claims",
-    "description": "Incorrect claims. Please, check the audience and issuer.",
-    }, 401,
-)
-
 # Auth Header
 
 
