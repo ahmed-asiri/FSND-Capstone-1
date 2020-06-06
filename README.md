@@ -112,6 +112,14 @@ source setup.sh
 pytest test_rbac.py
 ```
 
+### Style Guide
+
+The source follows PEP8. Please use `pycodestyle` for guidance:
+
+```
+pycodestyle --exclude=env .
+```
+
 ## Endpoints
 
 ### `GET /`
