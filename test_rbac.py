@@ -4,11 +4,13 @@ import pytest
 from test_app import client, test_data
 
 # Enabling Auth0 if it was disabled before
-# NOTE: Please run these tests in moderation to not get rate-limited by Auth0 servers
+# NOTE: Please run these tests in moderation
+# to not get rate-limited by Auth0 servers
 if os.environ.get("DISABLE_AUTH0"):
     del os.environ["DISABLE_AUTH0"]
 
-# Require role tokens to be available in the environment, must be set in setup.sh
+# Require role tokens to be available in the environment,
+# must be set in setup.sh
 READONLY_TOKEN = os.environ["READONLY_TOKEN"]
 ADMIN_TOKEN = os.environ["ADMIN_TOKEN"]
 

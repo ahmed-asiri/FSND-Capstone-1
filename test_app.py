@@ -8,7 +8,8 @@ import json
 import tempfile
 import pytest
 
-# We'll disable Auth0 calls when testing the core functionality to avoid spamming Auth0
+# We'll disable Auth0 calls when testing the core functionality
+# to avoid spamming Auth0
 # RBAC tests are in test_rbac.py
 os.environ["DISABLE_AUTH0"] = "1"
 
@@ -123,7 +124,7 @@ def test_create_recipe_with_ingredients(client):
     '''Creates a recipe with its ingredients, and check that it's persisted'''
     recipe = {
         'name': 'Egg Avocado Sandwich',
-        'procedure': 'Doloribus eos ut voluptates quae. Quae soluta non quisquam...',
+        'procedure': 'Doloribus eos ut voluptates quae...',
         'time': 15,
         'ingredients': [
             {
@@ -157,8 +158,9 @@ def test_create_recipe_with_ingredients(client):
 
     sandwich = response.json['result']
     assert sandwich['name'] == 'Egg Avocado Sandwich'
-    assert [i['name'] for i in sandwich['ingredients']] == [i['name']
-                                                            for i in recipe['ingredients']]
+    expected_ingredients = [i['name'] for i in recipe['ingredients']]
+    actual_ingredients = [i['name'] for i in sandwich['ingredients']]
+    assert expected_ingredients == actual_ingredients
 
 
 def test_create_recipe_bad_request(client):
@@ -181,7 +183,7 @@ def test_update_recipe(client):
     }
     response = client.patch('/recipes/1', json=new_data)
     assert response.status_code == 200
-    assert response.json['success'] == True
+    assert response.json['success']
     assert response.json['result']['name'] == 'Burrito'
 
     response = client.get('/recipes/1')
@@ -254,7 +256,7 @@ def test_create_ingredient(client):
     assert newly_added['name'] == 'Garlic'
     assert newly_added['measurement'] == 2
     assert newly_added['measurement_unit'] == 'cloves'
-    assert newly_added['optional'] == True
+    assert newly_added['optional']
 
 
 def test_create_ingredient_bad_request(client):
@@ -288,15 +290,19 @@ def test_update_ingredient(client):
     }
     response = client.patch('/ingredients/1', json=new_data)
     assert response.status_code == 200
-    assert response.json['result']['name'] == 'Green Eggs'
-    assert response.json['result']['measurement'] == 10
-    assert response.json['result']['measurement_unit'] == 'boxes'
-    assert response.json['result']['optional'] == False
-    assert response.json['result']['recipe_id'] == old_data['result']['recipe_id']
+    recipe = response.json['result']
+    assert recipe['name'] == 'Green Eggs'
+    assert recipe['measurement'] == 10
+    assert recipe['measurement_unit'] == 'boxes'
+    assert recipe['optional'] is False
+    assert recipe['recipe_id'] == old_data['result']['recipe_id']
 
 
 def test_update_ingredient_bad_request(client):
-    '''Updating an ingredient with unknown field fails with BadRequest response'''
+    '''
+    Updating an ingredient with unknown field fails
+    with BadRequest response
+    '''
     response = client.patch(
         '/ingredients/1', json={'random_field': 'random_value'})
     assert response.status_code == 400

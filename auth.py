@@ -23,6 +23,12 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
+INVALID_CLAIMS_AUTH_ERROR = AuthError({
+    "code": "invalid_claims",
+    "description": "Incorrect claims. Please, check the audience and issuer.",
+    }, 401,
+)
+
 # Auth Header
 
 
@@ -84,7 +90,10 @@ def verify_decode_jwt(token):
     rsa_key = {}
     if "kid" not in unverified_header:
         raise AuthError(
-            {"code": "invalid_header", "description": "Authorization malformed.", }, 401,
+            {
+                "code": "invalid_header",
+                "description": "Authorization malformed.",
+            }, 401,
         )
 
     for key in jwks["keys"]:
@@ -114,13 +123,12 @@ def verify_decode_jwt(token):
             )
 
         except jwt.JWTClaimsError:
-            raise AuthError(
-                {
-                    "code": "invalid_claims",
-                    "description": "Incorrect claims. Please, check the audience and issuer.",
-                },
-                401,
-            )
+            error_info = {}
+            error_info["code"] = "invalid_claims"
+            error_info["description"] = "Incorrect claims. Please, "\
+                                        "check the audience and issuer."
+            invalid_claims_error = AuthError(error_info, 401)
+            raise invalid_claims_error
         except Exception:
             raise AuthError(
                 {
