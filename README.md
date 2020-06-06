@@ -11,6 +11,7 @@ This is my capstone project submission for the Udacity Full-Stack Developer Nano
 The goal is to demonstrate the ability to:
 
 - Design data models and their relations using SQLAlchemy.
+- Write database queries using SQLAlchemy.
 - Design an HTTP API with Flask.
 - Document the API and development guide in detail.
 - Implement authentication and Role Based Access Control using Auth0.
