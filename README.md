@@ -4,6 +4,20 @@ API for managing your cooking recipes.
 
 Live Heroku deployment: https://fsnd-recipehub.herokuapp.com/recipes
 
+## Motivation
+
+This is my capstone project submission for the Udacity Full-Stack Developer Nanodegree program.
+
+The goal is to demonstrate the ability to:
+
+- Design data models and their relations using SQLAlchemy.
+- Design an HTTP API with Flask.
+- Document the API and development guide in detail.
+- Implement authentication and Role Based Access Control using Auth0.
+- Test the API and access control capabilities.
+- Provide PEP8 compliant, and readable code.
+- Deploy the app to Heroku.
+
 ## Authentication when using live deployment
 
 The Heroku deployment requires authentication to start using. There are two access levels: ReadOnly and Admin.
